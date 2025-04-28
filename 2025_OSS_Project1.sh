@@ -54,6 +54,9 @@ do
             sort -t, -k 22 -nr "$file_name" | awk -F"," -v num=1 '$8 > 502 && num <= 5 {print ""num". "$2" (Team: "$4") - SLG: "$22", HR: "$14", RBI: "$15""; num++}' # for , while 쓰면 속도 더 오를지도
             echo
             echo
+        else
+            echo
+            echo
         fi
     ;;
     3)
@@ -88,19 +91,19 @@ do
         case "$age" in
         1)
             echo "Top 5 by SLG in Group A (Age < 25): "
-            sort -t, -k 22 -nr "$file_name" | awk -F"," -v num=1 '$8 > 502 && num <= 5 && $3 < 25 {print ""$2" ("$4") - Age: "$3", SLG: "$22", BA: "$20", HR: "$14""; num++}' 
+            tail -n +2 "$file_name" | sort -t, -k 22,22 -nr | awk -F"," -v num=1 '$8 > 502 && num <= 5 && $3 < 25 {print ""$2" ("$4") - Age: "$3", SLG: "$22", BA: "$20", HR: "$14""; num++}' 
             echo
             echo
             ;;
         2)
             echo "Top 5 by SLG in Group B (Age 25-30): "
-            sort -t, -k 22 -nr "$file_name" | awk -F"," -v num=1 '$8 > 502 && num <= 5 && $3 >= 25 && $3 <= 30 {print ""$2" ("$4") - Age: "$3", SLG: "$22", BA: "$20", HR: "$14""; num++}' 
+            tail -n +2 "$file_name" | sort -t, -k 22,22 -nr | awk -F"," -v num=1 '$8 > 502 && num <= 5 && $3 >= 25 && $3 <= 30 {print ""$2" ("$4") - Age: "$3", SLG: "$22", BA: "$20", HR: "$14""; num++}' 
             echo
             echo
             ;;
         3)
             echo "Top 5 by SLG in Group C (Age > 30): "
-            sort -t, -k 22 -nr "$file_name" | awk -F"," -v num=1 '$8 > 502 && num <= 5 && $3 > 30 {print ""$2" ("$4") - Age: "$3", SLG: "$22", BA: "$20", HR: "$14""; num++}' 
+            tail -n +2 "$file_name" | sort -t, -k 22,22 -nr | awk -F"," -v num=1 '$8 > 502 && num <= 5 && $3 > 30 {print ""$2" ("$4") - Age: "$3", SLG: "$22", BA: "$20", HR: "$14""; num++}' 
             echo
             echo
             ;;
@@ -117,10 +120,27 @@ do
         echo "Players with HR >= "$min_HR" and BA >= "$min_BA": "
 
         #홈런 기준 내림차순
-        # sort -t, -k 14 -nr "$file_name" | awk -F"," -v min_HR="$min_HR" -v min_BA="$min_BA" '$8 > 502 && $14 >= min_HR && $20 >= min_BA {print ""$2" ("$4") - HR: "$14", BA: "$20", RBI: "$15", SLG: "$22""}'
-        sort -t, -k 14 -nr "$file_name" | head -n 10
+        tail -n +2 "$file_name" | sort -t, -k 14,14 -nr | awk -F"," -v min_HR="$min_HR" -v min_BA="$min_BA" '$8 > 502 && $14 >= min_HR && $20 >= min_BA {print ""$2" ("$4") - HR: "$14", BA: "$20", RBI: "$15", SLG: "$22""}'
+        echo
+        echo
     ;;
     6)
+        echo "Generate a formatted player report for which team?"
+        read -p "Enter team abbreviation (e.g., NYY, LAD, BOS): " team_for_report
+
+        echo
+        echo "========================= "$team_for_report" PLAYER REPORT =========================="
+        echo Date : $(date +%Y/%m/%d) 
+
+        echo "---------------------------------------------------------------------------"
+        echo "PLAYER                            HR     RBI      BA       OBP      OPS    "
+        echo "---------------------------------------------------------------------------"
+
+        tail -n +2 "$file_name" | sort -t, -k14,14nr | awk -F"," -v team="$team_for_report" '$4~team {printf "%-30s %5d %7d %8.3f %8.3f %8.3f\n", $2, $14, $15, $20, $21, $23; team_num++;}
+                                                        END {print "---------------------------------------------------------------------------"; print "TEAM TOTALS:", team_num, "players"}'
+        echo
+        echo
+
     ;;
 
     7)
