@@ -38,7 +38,7 @@ do
         echo 
         echo
         echo "Player stats for "$player_name": "
-        awk -F"," -v name="$player_name" '$2~name {print "Player: "name", Team: "$4", Age: "$3", WAR: "$6", HR: "$14", BA: "$20""}' "$file_name"
+        awk -F"," -v name="$player_name" '$2==name {print "Player: "name", Team: "$4", Age: "$3", WAR: "$6", HR: "$14", BA: "$20""}' "$file_name"
         echo
         echo
         ;;
@@ -64,13 +64,12 @@ do
         
         echo
         echo
-        awk -F"," -v team="$team" '$4~team {total_age += $3; total_hr += $14; total_RBI += $15; team_num++} 
+        awk -F"," -v team="$team" '$4==team {total_age += $3; total_hr += $14; total_RBI += $15; team_num++} 
         END {
             if (team_num > 0){
                 print "Team stats for "team": "
-                print "Average age: " ,total_age/team_num
-                print "ToTal home runs: ", total_hr 
-                print "Total RBI: ", total_RBI}
+                printf "Average age: %.1f \nToTal home runs %d \nTotal RBI: %d" ,total_age/team_num, total_hr, total_RBI
+                }
 
             else {print "Error: non-existent team is entered!"}
             }' "$file_name"
@@ -136,7 +135,7 @@ do
         echo "PLAYER                            HR     RBI      BA       OBP      OPS    "
         echo "---------------------------------------------------------------------------"
 
-        tail -n +2 "$file_name" | sort -t, -k14,14nr | awk -F"," -v team="$team_for_report" '$4~team {printf "%-30s %5d %7d %8.3f %8.3f %8.3f\n", $2, $14, $15, $20, $21, $23; team_num++;}
+        tail -n +2 "$file_name" | sort -t, -k14,14nr | awk -F"," -v team="$team_for_report" '$4==team {printf "%-30s %5d %7d %8.3f %8.3f %8.3f\n", $2, $14, $15, $20, $21, $23; team_num++;}
                                                         END {print "---------------------------------------------------------------------------"; print "TEAM TOTALS:", team_num, "players"}'
         echo
         echo
