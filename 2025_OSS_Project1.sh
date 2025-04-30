@@ -51,7 +51,7 @@ do
             echo
             echo
             echo "***Top 5 Players by SLG***"
-            sort -t, -k 22 -nr "$file_name" | awk -F"," -v num=1 '$8 > 502 && num <= 5 {print ""num". "$2" (Team: "$4") - SLG: "$22", HR: "$14", RBI: "$15""; num++}' # for , while 쓰면 속도 더 오를지도
+            sort -t, -k 22 -nr "$file_name" | awk -F"," -v num=1 '$8 > 502 && num <= 5 {print ""num". "$2" (Team: "$4") - SLG: "$22", WAR: "$6", HR: "$14", RBI: "$15""; num++}' 
             echo
             echo
         else
